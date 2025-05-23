@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chronic Disease Prediction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl">
+      <h1 class="text-3xl font-bold text-center mb-6">Chronic Disease Prediction</h1>
+      
+      <form method="POST" class="space-y-4">
+        <!-- Name -->
+        <div>
+          <label class="block font-semibold mb-1">Name</label>
+          <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <!-- Age -->
+        <div>
+          <label class="block font-semibold mb-1">Age</label>
+          <input type="number" name="age" required min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <!-- Gender -->
+        <div>
+          <label class="block font-semibold mb-1">Gender</label>
+          <select name="gender" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select your gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <!-- Ethnicity -->
+        <div>
+          <label class="block font-semibold mb-1">Ethnicity</label>
+          <select name="ethnicity" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select your ethnicity</option>
+            <option value="Asian">Asian</option>
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+            <option value="Hispanic">Hispanic</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Symptoms -->
+        <div>
+          <label class="block font-semibold mb-1">Do you have fever?</label>
+          <select name="fever" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">Do you have cough?</label>
+          <select name="cough" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">Do you feel fatigue?</label>
+          <select name="fatigue" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <!-- Blood Pressure -->
+        <div>
+          <label class="block font-semibold mb-1">Blood Pressure</label>
+          <select name="bp" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select</option>
+            <option value="Low">Low</option>
+            <option value="Normal">Normal</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        <!-- Cholesterol -->
+        <div>
+          <label class="block font-semibold mb-1">Cholesterol</label>
+          <select name="cholesterol" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            <option disabled selected>Select</option>
+            <option value="Low">Low</option>
+            <option value="Normal">Normal</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center">
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full">
+            Predict
+          </button>
+        </div>
+      </form>
+
+      <!-- Prediction Result -->
+      {% if prediction_result %}
+      <div class="mt-6 text-center text-lg font-semibold text-green-700">
+        {{ prediction_result }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
