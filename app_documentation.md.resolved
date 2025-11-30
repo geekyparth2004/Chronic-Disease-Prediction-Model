@@ -1,0 +1,135 @@
+# Documentation for [app.py](file:///c:/Users/Parth%20Goel/OneDrive/Desktop/Chronic%20Disease%20Prediction%20Model/Chronic-Disease-Prediction-Model/app.py)
+
+This document provides a line-by-line explanation of the [app.py](file:///c:/Users/Parth%20Goel/OneDrive/Desktop/Chronic%20Disease%20Prediction%20Model/Chronic-Disease-Prediction-Model/app.py) file, which serves as the main Flask application for the Chronic Disease Prediction Model.
+
+```python
+1: from flask import Flask, render_template, request
+```
+**Line 1:** Imports necessary modules from the `flask` library.
+*   `Flask`: The main class for creating the Flask application instance.
+*   `render_template`: A function to render HTML templates (like `form.html`).
+*   `request`: An object that contains data from the incoming HTTP request (e.g., form data submitted by the user).
+
+```python
+2: import joblib
+```
+**Line 2:** Imports `joblib`, a library used for serializing and deserializing Python objects. Here, it's used to load the pre-trained machine learning model and the data scaler.
+
+```python
+3: import numpy as np
+```
+**Line 3:** Imports `numpy` as `np`. NumPy is a library for numerical operations. Although imported, it doesn't appear to be explicitly used in this specific file, but is often a dependency for model prediction inputs.
+
+```python
+5: app = Flask(__name__)
+```
+**Line 5:** Creates an instance of the Flask class. `__name__` is a special variable in Python that represents the name of the current module. This tells Flask where to look for resources like templates and static files.
+
+```python
+7: # Load model and scaler
+8: model = joblib.load("xgboost_chronic_model.pkl")
+9: scaler = joblib.load("scaler.pkl")
+```
+**Lines 7-9:** Loads the pre-trained model and scaler.
+*   **Line 8:** Loads the machine learning model from the file [xgboost_chronic_model.pkl](file:///c:/Users/Parth%20Goel/OneDrive/Desktop/Chronic%20Disease%20Prediction%20Model/Chronic-Disease-Prediction-Model/xgboost_chronic_model.pkl). This model will be used to make predictions.
+*   **Line 9:** Loads the `StandardScaler` object from [scaler.pkl](file:///c:/Users/Parth%20Goel/OneDrive/Desktop/Chronic%20Disease%20Prediction%20Model/Chronic-Disease-Prediction-Model/scaler.pkl). This is crucial for scaling the user's input data to the same range as the data used to train the model.
+
+```python
+11: # Encoders
+12: gender_map = {"Male": 1, "Female": 0}
+13: ethnicity_map = {"Asian": 0, "Black": 1, "White": 2, "Hispanic": 3, "Other": 4}
+14: yes_no_map = {"Yes": 1, "No": 0}
+15: bp_map = {"Low": 0, "Normal": 1, "High": 2}
+16: cholesterol_map = {"Low": 0, "Normal": 1, "High": 2}
+```
+**Lines 11-16:** Defines dictionaries to map categorical user inputs (strings) to numerical values that the model can understand.
+*   **Line 12:** Maps 'Male' to 1 and 'Female' to 0.
+*   **Line 13:** Maps ethnicity categories to integers 0-4.
+*   **Line 14:** Maps 'Yes'/'No' answers (for symptoms) to 1 and 0.
+*   **Line 15:** Maps Blood Pressure levels ('Low', 'Normal', 'High') to 0, 1, 2.
+*   **Line 16:** Maps Cholesterol levels ('Low', 'Normal', 'High') to 0, 1, 2.
+
+```python
+18: @app.route("/", methods=["GET", "POST"])
+```
+**Line 18:** Defines a route for the root URL (`/`). This decorator tells Flask to trigger the [index](file:///c:/Users/Parth%20Goel/OneDrive/Desktop/Chronic%20Disease%20Prediction%20Model/Chronic-Disease-Prediction-Model/app.py#18-50) function when a user visits the homepage. It accepts both `GET` (viewing the page) and `POST` (submitting the form) requests.
+
+```python
+19: def index():
+```
+**Line 19:** Defines the [index](file:///c:/Users/Parth%20Goel/OneDrive/Desktop/Chronic%20Disease%20Prediction%20Model/Chronic-Disease-Prediction-Model/app.py#18-50) view function, which handles the logic for the homepage.
+
+```python
+20:     prediction_result = None
+```
+**Line 20:** Initializes `prediction_result` to `None`. This variable will hold the prediction message if a form is submitted.
+
+```python
+21:     if request.method == "POST":
+```
+**Line 21:** Checks if the current request is a `POST` request. This happens when the user submits the form on the webpage.
+
+```python
+22:         # Collect form data
+23:         name = request.form.get("name")
+24:         age = int(request.form.get("age"))
+25:         gender = request.form.get("gender")
+26:         ethnicity = request.form.get("ethnicity")
+27:         fever = request.form.get("fever")
+28:         cough = request.form.get("cough")
+29:         fatigue = request.form.get("fatigue")
+30:         bp = request.form.get("bp")
+31:         cholesterol = request.form.get("cholesterol")
+```
+**Lines 22-31:** Retrieves the data entered by the user in the HTML form.
+*   `request.form.get("field_name")` extracts the value for a specific input field.
+*   **Line 24:** Converts the `age` input from a string to an integer.
+
+```python
+33:         # Prepare input
+34:         encoded_input = [
+35:             age,
+36:             gender_map.get(gender, 0),
+37:             ethnicity_map.get(ethnicity, 4),
+38:             yes_no_map.get(fever, 0),
+39:             yes_no_map.get(cough, 0),
+40:             yes_no_map.get(fatigue, 0),
+41:             bp_map.get(bp, 1),
+42:             cholesterol_map.get(cholesterol, 1)
+43:         ]
+```
+**Lines 33-43:** Prepares the input vector for the model.
+*   It creates a list `encoded_input` containing the numerical values.
+*   It uses the mapping dictionaries defined earlier (lines 12-16) to convert categorical strings to numbers.
+*   `.get(key, default)` is used to safely retrieve values; if a key isn't found, it returns a default value (e.g., 0 or 1).
+
+```python
+45:         scaled_input = scaler.transform([encoded_input])
+```
+**Line 45:** Scales the input data using the loaded `scaler`. The model expects inputs to be normalized in the same way as the training data. `[encoded_input]` wraps the list in another list because `transform` expects a 2D array-like structure (samples, features).
+
+```python
+46:         prediction = model.predict(scaled_input)[0]
+```
+**Line 46:** Uses the loaded `model` to predict the outcome based on the scaled input. `model.predict` returns an array of predictions; `[0]` extracts the single prediction result (0 or 1) for this user.
+
+```python
+47:         prediction_result = f"{name}, based on your inputs, the prediction is: {'Yes (Chronic Disease)' if prediction == 1 else 'No (Healthy)'}"
+```
+**Line 47:** Formats the prediction result into a user-friendly string.
+*   If `prediction` is 1, it indicates "Yes (Chronic Disease)".
+*   If `prediction` is 0, it indicates "No (Healthy)".
+*   The message includes the user's `name`.
+
+```python
+49:     return render_template("form.html", prediction_result=prediction_result)
+```
+**Line 49:** Renders the `form.html` template. It passes the `prediction_result` variable to the template so it can be displayed to the user. If it was a GET request, `prediction_result` remains `None`.
+
+```python
+51: if __name__ == "__main__":
+52:     app.run(debug=True)
+```
+**Lines 51-52:** Standard Python boilerplate to run the script.
+*   **Line 51:** Checks if the script is being run directly (not imported as a module).
+*   **Line 52:** Starts the Flask development server with `debug=True`, which provides helpful error messages and auto-reloads the server when code changes.
