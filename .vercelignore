@@ -1,0 +1,15 @@
+*.ipynb
+*.csv
+.git
+.gitignore
+__pycache__
+depr_app.py
+clean_data.py
+evaluate_models.py
+evaluate_models_documentation.md
+app_documentation.md
+deployment_guide.md
+implementation_plan.md
+task.md
+walkthrough.md
+requirements_dev.txt
