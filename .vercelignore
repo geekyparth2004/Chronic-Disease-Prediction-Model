@@ -13,3 +13,5 @@ implementation_plan.md
 task.md
 walkthrough.md
 requirements_dev.txt
+xgboost_chronic_model.pkl
+scaler.pkl
