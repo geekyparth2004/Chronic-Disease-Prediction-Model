@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+xgboost = "==1.5.2"
+numpy = "==1.26.4"
+gunicorn = "*"
+
+[requires]
+python_version = "3.9"
