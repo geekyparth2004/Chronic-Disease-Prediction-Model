@@ -2,11 +2,11 @@ from flask import Flask, render_template, request
 import numpy as np
 
 app = Flask(__name__)
-
-# Load model from JSON (No sklearn dependency)
-import xgboost as xgb
-model = xgb.Booster()
-model.load_model("model.json")
+# Load model using ONNX (Lightweight, fits in Vercel)
+import onnxruntime as rt
+sess = rt.InferenceSession("model.onnx")
+input_name = sess.get_inputs()[0].name
+label_name = sess.get_outputs()[0].name
 
 # Scaler Parameters (Extracted manually to avoid installing scikit-learn on Vercel)
 SCALER_MEAN = [0.50143266, 0.47851003, 0.69340974, 0.252149, 46.32378223, 0.49570201, 0.99140401, 0.9512894]
@@ -53,12 +53,11 @@ def index():
         # Reshape for model (1, -1)
         scaled_input = scaled_input.reshape(1, -1)
         
-        # Create DMatrix for Booster
-        dmatrix = xgb.DMatrix(scaled_input)
+        # Reshape for model (1, -1) and ensure float32
+        scaled_input = scaled_input.reshape(1, -1).astype(np.float32)
         
-        # Predict (returns probabilities)
-        prediction_prob = model.predict(dmatrix)[0]
-        prediction = 1 if prediction_prob > 0.5 else 0
+        # Predict using ONNX
+        prediction = sess.run([label_name], {input_name: scaled_input})[0][0]
         
         prediction_result = f"{name}, based on your inputs, the prediction is: {'Yes (Chronic Disease)' if prediction == 1 else 'No (Healthy)'}"
 
